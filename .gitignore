@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Entornos virtuales
+env/
+venv/
+ENV/
+.venv/
+.env
+.env.*
+
+# Archivos de base de datos y logs
+*.sqlite3
+*.db
+*.log
+
+# Archivos de traducción
+*.pot
+
+# Archivos de configuración de IDE/editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de empaquetado
+*.egg-info/
+*.egg
+
+# Archivos temporales
+*.bak
+*.swp
+
+# Archivos y carpetas de Django
+staticfiles/
+media/
+
+# Node.js
+node_modules/
