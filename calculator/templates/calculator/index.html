@@ -1,103 +1,111 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Calculadora de Asado</title>
-</head>
-<body>
-    <h1>🔥 Calculadora de Asado 🥩</h1>
+{% extends "calculator/base.html" %}
+{% load static %}
+{% block content %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Calcular</button>
-    </form>
+<h1 class="text-center my-4">🔥 Calculadora de Asado 🥩</h1>
 
-    {% if result %}
-        <h2>Resultado para {{ result.total_people }} personas:</h2>
-        {% if result.is_picada %}
-            <p>🍻 Este es un cálculo pensado como <strong>picada</strong>.</p>
-        {% endif %}
-        <ul>
-            <li>🥩 Carne: <strong>{{ result.meat_kg }} kg</strong></li>
-            <li>🌭 Chorizos: <strong>{{ result.chorizo_units }} unidades</strong></li>
-            {% if result.mandioca_kg > 0 %}
-                <li>🍠 Mandioca: <strong>{{ result.mandioca_kg }} kg</strong></li>
-                <li>🥗 Ensalada: <strong>{{ result.ensalada_liters }} kilos</strong></li>
-                <li>🍞 Pan: <strong>{{ result.pan_units }} unidades</strong></li>
-            {% endif %}
-            {% if result.vegetarianos > 0 %}
-                <li>🥬 Vegetarianos: <strong>{{ result.vegetarianos }}</strong></li>
-            {% endif %}
-        </ul>
+<form method="post" class="mb-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Calcular</button>
+</form>
 
-        <h3>Detalle de carne por tipo de corte</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Tipo de corte</th>
-              <th>Cantidad (kg)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for tipo, cantidad in carne_por_tipo.items %}
-              <tr>
-                <td>{{ tipo }}</td>
-                <td>{{ cantidad|floatformat:2 }}</td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="2">No se seleccionó ningún corte de carne.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-
-        {% if incluir_bebidas %}
-          <h3>Bebidas sugeridas</h3>
-          <ul>
-            {% for bebida, cantidad in bebidas.items %}
-              <li>{{ bebida }}: <strong>{{ cantidad }} litros</strong></li>
-            {% endfor %}
-          </ul>
-        {% endif %}
+{% if result %}
+    <h2>Resultado para {{ result.total_people }} personas:</h2>
+    {% if result.is_picada %}
+        <p>🍻 Este es un cálculo pensado como <strong>picada</strong>.</p>
     {% endif %}
-
-    {% if bebidas %}
-          <h3>Bebidas sugeridas</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Bebida</th>
-                <th>Cantidad (litros)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for tipo, cantidad in bebidas.items %}
-                <tr>
-                  <td>{{ tipo }}</td>
-                  <td>{{ cantidad|floatformat:2 }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        {% endif %}
-
-    <h3>¿Cómo se hizo el cálculo?</h3>
     <ul>
-        <li>🥩 <strong>Carne:</strong> Se calcula aproximadamente 500g por adulto de porción completa, 350g por adulto de porción moderada y 250g por niño. Si seleccionaste cortes específicos, se reparte la cantidad entre ellos.</li>
-        <li>🌭 <strong>Chorizos:</strong> 1,5 por adulto de porción completa, 1 por adulto moderado, 0,5 por niño.</li>
-        <li>🍠 <strong>Mandioca:</strong> 250g por adulto, 150g por niño (si seleccionaste acompañamientos).</li>
-        <li>🥗 <strong>Ensalada:</strong> 200g por adulto (si seleccionaste acompañamientos).</li>
-        <li>🍞 <strong>Pan:</strong> 1 unidad por persona (si seleccionaste acompañamientos).</li>
-        <li>🥬 <strong>Vegetarianos:</strong> 250g de opción vegetariana por persona.</li>
-        <li>🍻 <strong>Bebidas:</strong> Se estima que cada persona consume 0,5L de agua y 0,5L de gaseosa. Además, cada adulto suma 1L de cerveza y 0,5L de vino. Estos valores son promedios pensados para un asado típico. Si tu grupo tiene costumbres diferentes (más o menos consumo de alcohol, más niños, etc.), ajusta las cantidades a tu criterio.</li>
-        {% if result.is_picada %}
-            <li>🍢 <strong>Modo picada:</strong> Las cantidades de carne y chorizos se ajustan para un evento tipo picada.</li>
+        <li>🥩 Carne: <strong>{{ result.meat_kg }} kg</strong></li>
+        <li>🌭 Chorizos: <strong>{{ result.chorizo_units }} unidades</strong></li>
+        {% if result.mandioca_kg > 0 %}
+            <li>🍠 Mandioca: <strong>{{ result.mandioca_kg }} kg</strong></li>
+            <li>🥗 Ensalada: <strong>{{ result.ensalada_liters }} kilos</strong></li>
+            <li>🍞 Pan: <strong>{{ result.pan_units }} unidades</strong></li>
         {% endif %}
-        {% if generous %}
-            <li>🧑‍🍳 <strong>Modo generoso:</strong> Las cantidades se incrementan un 20% para asegurar que sobre y nadie se quede con hambre.</li>
+        {% if result.vegetarianos > 0 %}
+            <li>🥬 Vegetarianos: <strong>{{ result.vegetarianos }}</strong></li>
         {% endif %}
     </ul>
-</body>
-</html>
+
+    <h3>Detalle de carne por tipo de corte</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tipo de corte</th>
+                <th>Cantidad (kg)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tipo, cantidad in carne_por_tipo.items %}
+                <tr>
+                    <td>{{ tipo }}</td>
+                    <td>{{ cantidad|floatformat:2 }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No se seleccionó ningún corte de carne.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="share-container" class="mb-3">
+        <button id="share-btn" class="btn btn-success">Compartir cálculo</button>
+        <span id="share-msg" class="text-success ms-2" style="display:none;">¡Copiado!</span>
+    </div>
+    <textarea id="share-text" class="form-control mb-2" style="display:none;" readonly>
+      Asado para {{ result.total_people }} personas:
+      - Carne: {{ result.meat_kg }} kg
+      - Chorizos: {{ result.chorizo_units }} unidades
+      {% if result.mandioca_kg > 0 %}
+      - Mandioca: {{ result.mandioca_kg }} kg
+      - Ensalada: {{ result.ensalada_liters }} kilos
+      - Pan: {{ result.pan_units }} unidades
+      {% endif %}
+      {% if result.vegetarianos > 0 %}
+      - Vegetarianos: {{ result.vegetarianos }}
+      {% endif %}
+      {% for tipo, cantidad in carne_por_tipo.items %}
+      - {{ tipo }}: {{ cantidad|floatformat:2 }} kg
+      {% endfor %}
+      {% if incluir_bebidas %}
+      Bebidas sugeridas:
+      {% for bebida, cantidad in bebidas.items %}
+      - {{ bebida }}: {{ cantidad }} litros
+      {% endfor %}
+      {% endif %}
+      ¡Calculado con la Calculadora de Asado!
+    </textarea>
+{% endif %}
+
+{% if bebidas %}
+    <h3>Bebidas sugeridas</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Bebida</th>
+                <th>Cantidad (litros)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tipo, cantidad in bebidas.items %}
+                <tr>
+                    <td>{{ tipo }}</td>
+                    <td>{{ cantidad|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+<h3>¿Cómo se hizo el cálculo?</h3>
+<ul>
+    <li>🥩 <strong>Carne:</strong> Se calcula aproximadamente 500g por adulto de porción completa, 350g por adulto de porción moderada y 250g por niño. Si seleccionaste cortes específicos, se reparte la cantidad entre ellos.</li>
+    <li>🌭 <strong>Chorizos:</strong> 1,5 por adulto de porción completa, 1 por adulto moderado, 0,5 por niño.</li>
+    <li>🍠 <strong>Mandioca:</strong> 250g por adulto, 150g por niño (si seleccionaste acompañamientos).</li>
+    <li>🥗 <strong>Ensalada:</strong> 200g por adulto (si seleccionaste acompañamientos).</li>
+    <li>🍞 <strong>Pan:</strong> 1 unidad por persona (si seleccionaste acompañamientos).</li>
+</ul>
+
+{% endblock %}

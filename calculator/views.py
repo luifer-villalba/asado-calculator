@@ -1,5 +1,6 @@
 from django import forms
 from django.shortcuts import render
+from .models import AsadoAudit
 
 CORTES_CHOICES = [
     ('vacío', 'Vacío'),
@@ -28,6 +29,10 @@ def index(request):
     result = None
     carne_por_tipo = {}
     bebidas = {}
+    ip = request.META.get('REMOTE_ADDR')
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    referer = request.META.get('HTTP_REFERER', '')
+    user = request.user if request.user.is_authenticated else None
     if request.method == 'POST':
         form = AsadoForm(request.POST)
         if form.is_valid():
@@ -104,6 +109,23 @@ def index(request):
                 carne_por_tipo['Costilla'] = round((adults_full * 0.2) + (adults_light * 0.15), 2)
             if 'pollo' in cortes:
                 carne_por_tipo['Pollo'] = round((adults_full * 0.1) + (adults_light * 0.1), 2)
+
+            AsadoAudit.objects.create(
+                adultos_completa=adults_full,
+                adultos_moderada=adults_light,
+                ninos=kids,
+                vegetarianos=vegetarian,
+                cortes=",".join(cortes) if cortes else "",
+                generoso=generous,
+                incluir_acompanamientos=include_sides,
+                solo_picada=is_picada,
+                incluir_bebidas=incluir_bebidas == 'True' or incluir_bebidas is True,
+                resultado=result,
+                ip=request.META.get('REMOTE_ADDR'),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                referer=request.META.get('HTTP_REFERER', ''),
+                usuario=request.user if request.user.is_authenticated else None,
+            )
 
     else:
         form = AsadoForm()
